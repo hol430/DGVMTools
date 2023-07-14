@@ -27,6 +27,8 @@
 #' @param summary.function A function to summarise (aggregate) across year and plot on top.  Obvious choice is \code{mean}, but there is flexibility to anything that operates on 
 #' a vector of numerics - eg median, a 95th percentile, standard deviation.
 #' @param summary.function.label An optional character string to give a pretty label to for the summary function legend.
+#' @param summary.as.points An optional flag to control whether the summary values are rendered as points (TRUE) or lines (FALSE). Defaults to points (TRUE).
+#' @param summary.only An optional flag. Iff TRUE, only summary values are rendered. Defaults to FALSE.
 #' @param text.multiplier A number specifying an overall multiplier for the text on the plot.  
 #' Make it bigger if the text is too small on large plots and vice-versa.
 #' @param plot Boolean, if FALSE return a data.table with the final data instead of the ggplot object.  This can be useful for inspecting the structure of the facetting columns, amongst other things.
@@ -73,6 +75,8 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
                           x.label = NULL,
                           summary.function,
                           summary.function.label = deparse(substitute(summary.function)),
+                          summary.as.points = TRUE,
+                          summary.only = FALSE,
                           text.multiplier = NULL,
                           plot = TRUE,
                           ...) {
@@ -284,7 +288,9 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
   if(!missing(linetypes) && is.null(linetype.by)) aes.args[["linetype"]] <- linetypes
 
   # call geom_line (with aesthetics defined above) 
-  p <- p + do.call(geom_line, aes.args)
+  if (missing(summary.only) || summary.only == FALSE) {
+    p <- p + do.call(geom_line, aes.args)
+  }
   
   
   # add scales for the defined aesthetics
@@ -339,7 +345,11 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
     else {
      
       # add the stats
-      p <- p + stat_summary(aes(group=StatsGroup, fill = get(col.by)), fun=summary.function, geom="point", color="black", shape = 21, size = point.size)
+      if (missing(summary.as.points) || summary.as.points == TRUE) {
+        p <- p + stat_summary(aes(group=StatsGroup, fill = get(col.by)), fun=summary.function, geom="point", shape = 21, size = point.size)
+      } else {
+        p <- p + stat_summary(aes(group=StatsGroup, colour = get(col.by)), fun=summary.function, geom="line")
+      }
       
       # colour the points appropriately
       if(!is.null(cols)) p <- p + scale_fill_manual(values = cols, name = summary.function.label, labels = col.labels)
