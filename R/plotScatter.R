@@ -20,7 +20,7 @@
 #' @return A ggplot2 object
 #' @export
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}  
-plotScatterDave <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, tolerance = NULL, cols = NULL, size = 3, title = NULL, subtitle = NULL, x.label, y.label, one_to_one_line = TRUE) {
+plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, tolerance = NULL, cols = NULL, size = 3, title = NULL, subtitle = NULL, x.label, y.label, one_to_one_line = TRUE) {
   
   # check
   if(layer.x %in% layer.y) stop("To make a meaningful scatter plot I need either two different layers, or a two different Fields, or both!)")
