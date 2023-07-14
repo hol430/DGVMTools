@@ -247,7 +247,6 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
   
   # include the other columns if required for an aesthetic
   if(!is.null(col.by)) {
-    print(col.by) 
     interaction_list <- append(interaction_list, col.by) # special case for col.by because if missing is taken to be "Year"
   }
   if(!missing(linetype.by) && !is.null(linetype.by)) interaction_list <- append(interaction_list, linetype.by)
