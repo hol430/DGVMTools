@@ -33,6 +33,7 @@
 #' Make it bigger if the text is too small on large plots and vice-versa.
 #' @param plot Boolean, if FALSE return a data.table with the final data instead of the ggplot object.  This can be useful for inspecting the structure of the facetting columns, amongst other things.
 #' @param x.lim,y.lim Limits for the x and y axes (each a two-element numeric, optional)
+#' @param legend.position Position of the legend, in the ggplot2 style.  Passed to the ggplot function \code{theme()}. Can be "none", "top", "bottom", "left" or "right" or two-element numeric vector
 #' @param ... Arguments passed to \code{ggplot2::facet_wrap()}.  See the ggplot2 documentation for full details but the following are particularly useful.
 #' \itemize{
 #'  \item{"nrow"}{The number of rows of facets}
@@ -82,6 +83,7 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
                           plot = TRUE,
                           x.lim = NULL,
                           y.lim = NULL,
+                          legend.position = "bottom",
                           ...) {
   
   
@@ -391,7 +393,8 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
                  plot.subtitle = element_text(hjust = 0.5))
   
   # set legend 
-  p <- p + theme(legend.position = "right", legend.key.size = unit(2, 'lines'))
+  p <- p + theme(legend.title=element_blank())
+  p <- p + theme(legend.position = legend.position, legend.key.size = unit(2, 'lines'))
   
   # facet if necessary
   if(length(facet.vars) > 0) p <- p + facet_wrap(facet.vars, ...)
