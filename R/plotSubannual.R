@@ -32,6 +32,7 @@
 #' @param text.multiplier A number specifying an overall multiplier for the text on the plot.  
 #' Make it bigger if the text is too small on large plots and vice-versa.
 #' @param plot Boolean, if FALSE return a data.table with the final data instead of the ggplot object.  This can be useful for inspecting the structure of the facetting columns, amongst other things.
+#' @param x.lim,y.lim Limits for the x and y axes (each a two-element numeric, optional)
 #' @param ... Arguments passed to \code{ggplot2::facet_wrap()}.  See the ggplot2 documentation for full details but the following are particularly useful.
 #' \itemize{
 #'  \item{"nrow"}{The number of rows of facets}
@@ -79,6 +80,8 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
                           summary.only = FALSE,
                           text.multiplier = NULL,
                           plot = TRUE,
+                          x.lim = NULL,
+                          y.lim = NULL,
                           ...) {
   
   
@@ -368,7 +371,14 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
   
   # set the x-axis
   if(subannual.dimension == "Month") p <- p + scale_x_continuous(breaks = 1:12, labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep","Oct","Nov","Dec"))
-  
+
+  if(!is.null(x.lim)) {
+    p <- p + xlim(x.lim)
+  }
+  if(!is.null(y.lim)) {
+    p <- p + scale_y_continuous(limits = y.lim)
+  }
+
   # set the title
   p <- p + labs(title = title, subtitle = subtitle,  y = y.label, x = subannual.dimension)
   
