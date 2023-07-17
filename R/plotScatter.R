@@ -16,11 +16,28 @@
 #' coordinates with many decimal places which may have lost a small amount of precision and so don't match exactly.
 #' @param size Marker size.
 #' @param one_to_one_line Iff true, a 1:1 line will be shown on the plot.
+#' @param legend.position Position of the legend, in the ggplot2 style.  Passed to the ggplot function \code{theme()}. Can be "none", "top", "bottom", "left" or "right" or two-element numeric vector
+#' @param x.lim,y.lim Limits for the x and y axes (each a two-element numeric, optional)
 #' 
 #' @return A ggplot2 object
 #' @export
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}  
-plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, tolerance = NULL, cols = NULL, size = 3, title = NULL, subtitle = NULL, x.label, y.label, one_to_one_line = TRUE) {
+plotScatter <- function(x,
+                        layer.x,
+                        layer.y = NULL,
+                        alpha = 1,
+                        text.multiplier,
+                        tolerance = NULL,
+                        cols = NULL,
+                        size = 3,
+                        title = NULL,
+                        subtitle = NULL,
+                        x.label,
+                        y.label,
+                        one_to_one_line = TRUE,
+                        legend.position = "bottom",
+                        x.lim = NULL,
+                        y.lim = NULL) {
   
   # check
   if(layer.x %in% layer.y) stop("To make a meaningful scatter plot I need either two different layers, or a two different Fields, or both!)")
@@ -52,6 +69,14 @@ plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, 
   # Remove NAs from data.
   to.plot <- as.data.frame(stats::na.omit(to.plot))
 
+  # Remove all columns except those required for plotting.
+  to.plot <- to.plot[, c(x.new, y.new)]
+
+  # Collapse y data columns into a single column.
+  col.by <- "Layer"
+  y_to <- "Value"
+  to.plot <- pivot_longer(to.plot, cols = all_of(y.new), names_to = col.by, values_to = y_to)
+
   ### 8. MAKE A DESCRIPTIVE TITLE IF ONE HAS NOT BEEN SUPPLIED
   if(missing(title) || missing(subtitle) || is.null(title) || is.null(subtitle)) {
     titles <- makePlotTitle(x)
@@ -62,16 +87,25 @@ plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, 
   }
 
   # make the scatter plot
-  # scatter.plot <- ggplot(to.plot, aes_string(x=x.new, y=y.new)) +  geom_point(size=3, alpha = alpha)
-  scatter.plot <- ggplot(to.plot) + theme_bw()
-  for (i in 1:length(y.new)) {
-    y <- y.new[i]
-    # What a brilliant language.
-    scatter.plot <- scatter.plot + geom_point(mapping = aes(x = .data[[x.new]], y = .data[[y]]), colour = cols[i], size = size, alpha = alpha)
+  scatter.plot <- to.plot %>% ggplot(aes(.data[[x.new]], .data[[y_to]], colour = .data[[col.by]]))
+  scatter.plot <- scatter.plot + geom_point(size = size, alpha = alpha)
+
+  # Set correct colours.
+  if(!is.null(cols)) {
+    scatter.plot <- scatter.plot + scale_color_manual(values = cols, labels = y.new, breaks = y.new, name = col.by)
   }
 
+  # Plot 1:1 line.
   if (one_to_one_line) {
     scatter.plot <- scatter.plot + geom_abline(slope = 1, intercept = 0)
+  }
+
+  # Apply x/y axis limits.
+  if(!is.null(x.lim)) {
+    scatter.plot <- scatter.plot + xlim(x.lim)
+  }
+  if(!is.null(y.lim)) {
+    scatter.plot <- scatter.plot + scale_y_continuous(limits = y.lim)
   }
 
   # labels depending on input type
@@ -82,14 +116,19 @@ plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, 
                                         x = stringToExpression(paste0(x.label, " (", standardiseUnitString(x@quant@units), ")")))
   }
   else scatter.plot <- scatter.plot + labs(y = layer.y, x = layer.x)
-  
+
+  # Apply bw theme for consistency with other dgvmtools plotting functions.
   scatter.plot <- scatter.plot + theme_bw()
 
   # labels and positioning
   scatter.plot <- scatter.plot + labs(title = title, subtitle = subtitle)
   
   if(!missing(text.multiplier)) scatter.plot <- scatter.plot + theme(text = element_text(size = theme_get()$text$size * text.multiplier))
-  
+
+  # Legend formatting.
+  scatter.plot <- scatter.plot + theme(legend.title = element_blank())
+  scatter.plot <- scatter.plot + theme(legend.position = legend.position, legend.key.size = unit(2, 'lines'))
+
   return(scatter.plot)
   
 }
