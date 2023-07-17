@@ -18,6 +18,7 @@
 #' @param col.labels,linetype.labels,size.labels,shape.labels,alpha.labels A vector of character strings which are used as the labels for the lines. Must have the same length as the
 #' number of Sources/Layers/Site/Quantities in the plot.  The vectors can/should be named to match particular col/size/linetype/shape/alpha values to particular Layers/Sources/Sites/Quantities.    
 #' @param x.label,y.label Character strings (or expressions) for the x and y axes (optional)
+#' @param text.expression Controls whether the plot text is rendered as expressions (ie using mathjax). Defaults to TRUE.
 #' @param x.lim,y.lim Limits for the x and y axes (each a two-element numeric, optional)
 #' @param points Logical, if TRUE plot data as points (with geom_points) instead of lines (witg geom_lines).  
 #' Good for plotting time series with missing data where geom_lines joins lines over the gaps which is not helpful
@@ -77,6 +78,7 @@ plotTemporal <- function(fields,
                          dropEmpty = FALSE,
                          plotTrend = FALSE,
                          plot = TRUE,
+                         text.expression = TRUE,
                          ...
 ){
   
@@ -139,7 +141,12 @@ plotTemporal <- function(fields,
   
   ### 7. MAKE THE Y-AXIS LABEL
   if(is.null(y.label)) {
-    y.label <- stringToExpression(makeYAxis(final.fields))
+    ylab <- makeYAxis(final.fields)
+    if (text.expression) {
+      y.label <- stringToExpression(ylab)
+    } else {
+      y.label <- ylab
+    }
   }
   
   # check the defined Layers present in the Fields and make a unique list
