@@ -350,13 +350,18 @@ plotSubannual <- function(fields, # can be a Field or a list of Fields
       # add the stats
       if (missing(summary.as.points) || summary.as.points == TRUE) {
         p <- p + stat_summary(aes(group=StatsGroup, fill = get(col.by)), fun=summary.function, geom="point", shape = 21, size = point.size)
+        # colour the points appropriately
+        if(!is.null(cols) && is.null(col.by)) p <- p + scale_fill_manual(values = cols, name = summary.function.label, labels = col.labels)
+        else if (!is.null(col.by) && !is.null(cols)) p <- p + scale_fill_manual(values = cols, labels = col.labels)
+        else p <- p + viridis::scale_fill_viridis(name = summary.function.label, labels = col.labels, discrete = TRUE, option = "C", end = 0.9 )
       } else {
-        p <- p + stat_summary(aes(group=StatsGroup, colour = get(col.by)), fun=summary.function, geom="line")
+        p <- p + stat_summary(aes(group=StatsGroup), fun=summary.function, geom="line")
+        # colour the points appropriately
+        if(!is.null(cols) && is.null(col.by)) p <- p + scale_color_manual(values = cols, name = summary.function.label, labels = col.labels)
+        else if (!is.null(col.by) && !is.null(cols)) p <- p + scale_color_manual(values = cols, labels = col.labels)
+        else p <- p + viridis::scale_fill_viridis(name = summary.function.label, labels = col.labels, discrete = TRUE, option = "C", end = 0.9 )
       }
       
-      # colour the points appropriately
-      if(!is.null(cols)) p <- p + scale_fill_manual(values = cols, name = summary.function.label, labels = col.labels)
-      else p <- p + viridis::scale_fill_viridis(name = summary.function.label, labels = col.labels, discrete = TRUE, option = "C", end = 0.9 )
       p <- p + labs(shape=summary.function.label ) 
 
       # also add linetype if necessary
