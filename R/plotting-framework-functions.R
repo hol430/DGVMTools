@@ -375,7 +375,7 @@ mergeFieldsForPlotting <- function(fields,  add.Quantity = FALSE,  add.Site = FA
 #' @keywords internal
 #' 
 
-makeYAxis <- function(final.fields) {
+makeYAxis <- function(final.fields, text.expression = TRUE) {
   
   # first extract the names and units and store them in a tuples (two element vector) for the Quantity from each Field
   all.quant.tuples <- list()
@@ -393,8 +393,10 @@ makeYAxis <- function(final.fields) {
   }
   y.axis.label <- substr(y.axis.label,  1, nchar(y.axis.label) - 2)
   
-  return(stringToExpression(y.axis.label))
-  
+  if (text.expression) {
+    return(stringToExpression(y.axis.label))
+  }
+  return(y.axis.label)
 }
 
 

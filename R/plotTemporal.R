@@ -141,12 +141,7 @@ plotTemporal <- function(fields,
   
   ### 7. MAKE THE Y-AXIS LABEL
   if(is.null(y.label)) {
-    ylab <- makeYAxis(final.fields)
-    if (text.expression) {
-      y.label <- stringToExpression(ylab)
-    } else {
-      y.label <- ylab
-    }
+    y.label <- makeYAxis(final.fields, text.expression = text.expression)
   }
   
   # check the defined Layers present in the Fields and make a unique list
