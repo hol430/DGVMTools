@@ -112,8 +112,13 @@ plotScatter <- function(x,
   if(is.Field(x)) {
     if (missing(x.label) || is.null(x.label)) x.label <- stringToExpression(paste0(layer.x, " ", x@source@name,  " ", x@quant@name))
     if (missing(y.label) || is.null(y.label)) y.label <- stringToExpression(paste0(layer.y[[1]], " ", x@source@name,  " ", x@quant@name))
-    scatter.plot <- scatter.plot + labs(y = stringToExpression(paste0(y.label, " (", standardiseUnitString(x@quant@units), ")")),
-                                        x = stringToExpression(paste0(x.label, " (", standardiseUnitString(x@quant@units), ")")))
+    units <- standardiseUnitString(x@quant@units)
+    if (units != "1") {
+      x.label <- stringToExpression(paste0(x.label, " (", units, ")"))
+      y.label <- stringToExpression(paste0(y.label, " (", units, ")"))
+    }
+    scatter.plot <- scatter.plot + labs(y = stringToExpression(y.label),
+                                        x = stringToExpression(x.label))
   }
   else scatter.plot <- scatter.plot + labs(y = layer.y, x = layer.x)
 
@@ -123,7 +128,7 @@ plotScatter <- function(x,
   # labels and positioning
   scatter.plot <- scatter.plot + labs(title = title, subtitle = subtitle)
   
-  if(!missing(text.multiplier)) scatter.plot <- scatter.plot + theme(text = element_text(size = theme_get()$text$size * text.multiplier))
+  if(!is.null(text.multiplier)) scatter.plot <- scatter.plot + theme(text = element_text(size = theme_get()$text$size * text.multiplier))
 
   # Legend formatting.
   scatter.plot <- scatter.plot + theme(legend.title = element_blank())
