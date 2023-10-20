@@ -23,7 +23,6 @@ Imports:
     terra,
     compiler,
     maps,
-    maptools,
     mapdata,
     RColorBrewer,
     reshape2,
