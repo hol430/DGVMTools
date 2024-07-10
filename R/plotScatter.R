@@ -3,8 +3,10 @@
 #' This simple function makes (and returns it as an object, it doesn't print it) a simple scatter plot (using ggplot2). 
 #' The data are two layers from either one or two Field objects.  Data points which appear in one Field but not the other are excluded  
 #' 
-#' @param x The DGVMTools::Field or Comparison object from which the data to be plotted should be taken.
-#' @param layer.x The first layer to be plotted on the x axis.
+#' @param x The first DGVMTools::Field or Comparison object from which the data to be plotted should be taken.
+#' @param y The second DGVMTools::Field or Comparison object from which the data to be plotted should be taken.
+#' Default value is x.
+#' @param layer.x The first layer to be plotted (taken from x)
 #' @param layer.y The layers to be plotted on the y-axis. Defaults to all layers except layer.x.
 #' @param alpha Numeric between 0 and 1 specifing the transparency of the points.  Default is 1 (= fully opaque).
 #' @param text.multiplier A number specifying an overall multiplier for the text on the plot.  
@@ -13,18 +15,11 @@
 #' need to be to the coordinates in order to get a match.  Can be a single numeric (for the same tolerance for both lon and lat) or a vector of two numerics (for lon and lat separately).
 #' Default is no rounding (value is NULL) and so is fine for most regular spaced grids.  However, setting this can be useful to force matching of 
 #' coordinates with many decimal places which may have lost a small amount of precision and so don't match exactly.
-#' @param size Marker size.
 #' 
 #' @return A ggplot2 object
 #' @export
 #' @author Matthew Forrest \email{matthew.forrest@@senckenberg.de}  
-plotScatter <- function(x,
-                        layer.x,
-                        layer.y = NULL,
-                        alpha = 1,
-                        text.multiplier,
-                        tolerance = NULL) {
-  
+plotScatter <- function(x, layer.x, layer.y = NULL, alpha = 1, text.multiplier, tolerance = NULL) {
   # check
   if(layer.x %in% layer.y) stop("To make a meaningful scatter plot I need either two different layers, or a two different Fields, or both!)")
 
