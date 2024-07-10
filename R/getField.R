@@ -85,16 +85,16 @@ getField <- function(source,
                      quant, 
                      layers = NULL,
                      file.name = NULL,
-                     first.year,
-                     last.year,
-                     year.aggregate.method, 
-                     spatial.extent, 
-                     spatial.extent.id, 
-                     spatial.aggregate.method,
-                     subannual.resolution,
-                     subannual.original,
-                     subannual.aggregate.method,
-                     sta.info,
+                     first.year = NULL,
+                     last.year = NULL,
+                     year.aggregate.method = NULL, 
+                     spatial.extent = NULL, 
+                     spatial.extent.id = NULL, 
+                     spatial.aggregate.method = NULL,
+                     subannual.resolution = NULL,
+                     subannual.original = NULL,
+                     subannual.aggregate.method = NULL,
+                     sta.info = NULL,
                      quick.read.file = NULL, 
                      quick.read.autodelete = FALSE, 
                      verbose = FALSE, 
@@ -103,8 +103,8 @@ getField <- function(source,
   # To avoid annoying NOTES when R CMD CHECK-ing
   Lon = Lat = Year = NULL  
   
-  ### CHECK ARGUEMENTS
-  if(!missing(first.year) & !missing(last.year) ) {
+  ### CHECK ARGUMENTS
+  if(!(missing(first.year) | is.null(first.year)) & !(missing(last.year) | is.null(last.year)) ) {
     if(first.year > last.year) stop("first.year cannot be greater than last.year!")
   }
   if(!missing(layers) && !is.character(layers) && !is.null(layers)) stop("The 'layers' argument must be a character string or a list of character strings.")
